@@ -39,8 +39,13 @@ def test_footnotes():
        <p>Treść pierwszego przypisu</p>
       </footnote>
      </footnotes>
+     <endnotes>
+      <endnote id="2">
+       <p>A to jest treść przypisu końcowego</p>
+      </endnote>
+     </endnotes>
      <body>
-      <p>To jest zdanie z dwoma<footnotemark id="2" /> przypisami.</p>
+      <p>To jest zdanie z dwoma<footnotemark id="2" /> przypisami<endnotemark id="2" />.</p>
      </body>
     </document>""")
 

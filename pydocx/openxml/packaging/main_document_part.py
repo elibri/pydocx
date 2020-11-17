@@ -7,6 +7,7 @@ from __future__ import (
 
 from pydocx.openxml.packaging.font_table_part import FontTablePart
 from pydocx.openxml.packaging.footnotes_part import FootnotesPart
+from pydocx.openxml.packaging.endnotes_part import EndnotesPart
 from pydocx.openxml.packaging.image_part import ImagePart
 from pydocx.openxml.packaging.numbering_definitions_part import NumberingDefinitionsPart  # noqa
 from pydocx.openxml.packaging.open_xml_part import OpenXmlPart
@@ -34,6 +35,7 @@ class MainDocumentPart(OpenXmlPart):
     child_part_types = [
         FontTablePart,
         FootnotesPart,
+        EndnotesPart,
         ImagePart,
         NumberingDefinitionsPart,
         StyleDefinitionsPart,
@@ -92,3 +94,8 @@ class MainDocumentPart(OpenXmlPart):
     @property
     def footnotes_part(self):
         return self.get_part_of_class_type(part_class=FootnotesPart)
+
+    @property
+    def endnotes_part(self):
+        return self.get_part_of_class_type(part_class=EndnotesPart)
+

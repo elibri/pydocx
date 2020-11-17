@@ -14,6 +14,10 @@ from pydocx.openxml.wordprocessing.footnote import Footnote
 from pydocx.openxml.wordprocessing.footnote_reference import FootnoteReference
 from pydocx.openxml.wordprocessing.footnote_reference_mark import FootnoteReferenceMark  # noqa
 from pydocx.openxml.wordprocessing.footnotes import Footnotes
+from pydocx.openxml.wordprocessing.endnote import Endnote
+from pydocx.openxml.wordprocessing.endnote_reference import EndnoteReference
+from pydocx.openxml.wordprocessing.endnote_reference_mark import EndnoteReferenceMark
+from pydocx.openxml.wordprocessing.endnotes import Endnotes
 from pydocx.openxml.wordprocessing.hyperlink import Hyperlink
 from pydocx.openxml.wordprocessing.inserted_run import InsertedRun
 from pydocx.openxml.wordprocessing.level import Level
@@ -61,6 +65,10 @@ __all__ = [
     'FootnoteReference',
     'FootnoteReferenceMark',
     'Footnotes',
+    'Endnote',
+    'EndnoteReference',
+    'EndnoteReferenceMark',
+    'Endnotes',
     'Hyperlink',
     'InsertedRun',
     'Level',

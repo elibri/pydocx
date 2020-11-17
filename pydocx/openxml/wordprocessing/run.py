@@ -19,6 +19,8 @@ from pydocx.openxml.wordprocessing.tab_char import TabChar
 from pydocx.openxml.wordprocessing.deleted_text import DeletedText
 from pydocx.openxml.wordprocessing.footnote_reference import FootnoteReference
 from pydocx.openxml.wordprocessing.footnote_reference_mark import FootnoteReferenceMark
+from pydocx.openxml.wordprocessing.endnote_reference import EndnoteReference
+from pydocx.openxml.wordprocessing.endnote_reference_mark import EndnoteReferenceMark
 from pydocx.openxml.wordprocessing.embedded_object import EmbeddedObject
 from pydocx.openxml.markup_compatibility import AlternateContent
 from pydocx.util.memoize import memoized
@@ -40,6 +42,8 @@ class Run(XmlModel):
         DeletedText,
         FootnoteReference,
         FootnoteReferenceMark,
+        EndnoteReference,
+        EndnoteReferenceMark,
         FieldChar,
         FieldCode,
         AlternateContent,

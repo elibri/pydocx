@@ -1,14 +1,12 @@
 
+from pydocx.openxml import wordprocessing
 from pydocx.export import PyDocXHTMLExporter
 from pydocx.export.html import HtmlTag, is_only_whitespace, is_not_empty_and_not_only_whitespace
 from itertools import chain
 
-#TODO: pomijane są przypisy końcowe. Jeden przypis końcowy jest w pliku footnotes
-
-
 #https://pydocx.readthedocs.io/en/latest/extending.html
 
-BLOCK_ELEMENTS = ['document', 'body', 'head', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'ol', 'ul', 'li', 'table', 'tr', 'td', 'footnotes', 'footnote']
+BLOCK_ELEMENTS = ['document', 'body', 'head', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'ol', 'ul', 'li', 'table', 'tr', 'td', 'footnotes', 'footnote', 'endnotes', 'endnote']
 
 #patrz na listę metod na napisania w self.node_type_to_export_func_map w pydocx.export.html linia 36
 
@@ -54,10 +52,22 @@ def tokens_without_reduntant_inline_tags(stream):
 
 class DocXMLExporter(PyDocXHTMLExporter):
 
+  def __init__(self, *args, **kwargs):
+    super(DocXMLExporter, self).__init__(*args, **kwargs)
+    self.node_type_to_export_func_map.update({
+      wordprocessing.EndnoteReference: self.export_endnote_reference,
+      wordprocessing.Endnote: self.export_endnote,
+    })
+
+
   def export_document(self, document):
     tag = HtmlTag('document')
     if not 'footnotes' in dir(self): #plik parsowany jest dwukrotnie (parz first_pass w base.py)
       self.footnotes = {}            #przed drugim przejściem nie chcemy stracić wyników
+
+    if not 'endnotes' in dir(self):
+      self.endnotes = {}
+
     results = super(PyDocXHTMLExporter, self).export_document(document)
     sequence = []
     #head = self.head()
@@ -65,6 +75,10 @@ class DocXMLExporter(PyDocXHTMLExporter):
     #  sequence.append(head)
     if len(self.footnotes) > 0:
       sequence.append(self.export_footnote_texts())
+
+    if len(self.endnotes) > 0:
+      sequence.append(self.export_endnote_texts())
+ 
     if results is not None:
       sequence.append(results)
 
@@ -78,6 +92,15 @@ class DocXMLExporter(PyDocXHTMLExporter):
         yield token
       yield HtmlTag('footnote', closed=True)
     yield HtmlTag('footnotes', closed=True)
+
+  def export_endnote_texts(self):
+    yield HtmlTag('endnotes', closed=False)
+    for endnote_id, tokens in self.endnotes.items():
+      yield HtmlTag('endnote', closed=False, id=endnote_id)
+      for token in tokens:
+        yield token
+      yield HtmlTag('endnote', closed=True)
+    yield HtmlTag('endnotes', closed=True)
 
   def tokens_with_indentations(self):
     level = 0
@@ -185,7 +208,7 @@ class DocXMLExporter(PyDocXHTMLExporter):
   def export_run_property_vertical_align_superscript(self, run, results):
     if results is not None:
       results = list(results)
-      if len(results) == 1 and isinstance(results[0], HtmlTag) and results[0].tag == "footnotemark":
+      if len(results) == 1 and isinstance(results[0], HtmlTag) and (results[0].tag == "footnotemark" or results[0].tag == "endnotemark"):
         yield results[0]
       elif len(results) > 0:
         yield HtmlTag(tag='sup', closed=False)
@@ -197,6 +220,15 @@ class DocXMLExporter(PyDocXHTMLExporter):
     ftokens = chain(*(list(self.node_type_to_export_func_map[type(child)](child)) for child in footnote_reference.footnote.children))
     self.footnotes[footnote_reference.footnote_id] = [token for token in ftokens if token != '\t']
     yield HtmlTag(tag="footnotemark", id=footnote_reference.footnote_id, allow_self_closing=True)
+
+  def export_endnote_reference(self, endnote_reference):
+    ftokens = chain(*(list(self.node_type_to_export_func_map[type(child)](child)) for child in endnote_reference.endnote.children))
+    self.endnotes[endnote_reference.endnote_id] = [token for token in ftokens if token != '\t']
+    yield HtmlTag(tag="endnotemark", id=endnote_reference.endnote_id, allow_self_closing=True)
+
+
+  def export_endnote(self):
+    pass
 
   def export_numbering_span(self, numbering_span):
     results = super(PyDocXHTMLExporter, self).export_numbering_span(numbering_span)
